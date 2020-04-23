@@ -1,13 +1,74 @@
+@import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
+
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    font-family: 'Poppins', sans-serif;
+    background: #fafafa;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.content {
+    position: fixed;
+    height:100%;
+    width:100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#cyto {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+#cy-wrapper {
+    display: flex;
+    height: 100%;
+    position: relative;
+}
+
+#layout-advanced {
+    float: right;
+}
+
+/* Editor Card */
+#editor {
+    opacity: 75%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-top: 10px;
+    margin-left: 10px;
+    z-index: 999;
+}
+
+#editor-textarea {
+    height: 100%;
+}
+
+#editor-selector {
+    width:100%;
+}
+
+#editor-apply {
+    color: white;
+}
+
+#editor-modes {
+    width: 100%;
+}
+
+#editor-button {
+    position:absolute;
+    margin-top: 10px;
+    margin-left: -.2em;
+}
+
+.jsoneditor-contextmenu {
+    z-index: 10;
+}
+
+.autocomplete.dropdown {
+    width: max-content!important;
+    max-width: 200px;
 }
