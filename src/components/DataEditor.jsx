@@ -1,7 +1,6 @@
-import React, {createRef} from 'react';
+import React, { createRef } from 'react';
 import ListGroup from 'react-bootstrap/ListGroup';
 import ListGroupItem from 'react-bootstrap/ListGroupItem';
-import { ResizableBox } from 'react-resizable';
 import CreatableSelect from 'react-select/creatable';
 
 import JsonEditor from './JsonEditor';
@@ -15,19 +14,19 @@ const autocomplete = {
     trigger: 'focus',
     caseSensitive: false,
     getOptions: (text, path, input, editor) => {
-        if (input === 'value'){
+        if (input === 'value') {
             const field = path[1];
             let options = new Set();
             // Add values from other elements.
             window.cy.elements().forEach(ele => {
                 let s = ele.data(field);
                 console.log(s)
-                if (s && typeof(s) !== 'object'){
+                if (s && typeof (s) !== 'object') {
                     options.add(s);
                 }
             });
             return Array.from(options);
-        }else if (input === 'field'){
+        } else if (input === 'field') {
             let fields = new Set();
             window.cy.elements().forEach(ele => {
                 Object.keys(ele.data()).forEach(name => fields.add(name));
@@ -58,7 +57,7 @@ export default class DataEditor extends React.Component {
         const selected = getElements(':selected');
         const data = selected.map(item => item.data());
         this.editor.current.jsonEditor.set(data);
-        this.setState({selected});
+        this.setState({ selected });
     }
 
     onJsonChange = () => {
@@ -70,16 +69,16 @@ export default class DataEditor extends React.Component {
     }
 
     onEditable = (node) => {
-        if (node.path && node.path.length === 2){
+        if (node.path && node.path.length === 2) {
             return !LOCKED_DATA.includes(node.field);
         }
         return true;
     }
-    
+
     onSelectionChange = (selected) => {
         const data = selected.map(item => item.data());
         this.editor.current.jsonEditor.set(data);
-        this.setState({selected});
+        this.setState({ selected });
     }
 
     onClassesChange = (newValue) => {
@@ -87,7 +86,7 @@ export default class DataEditor extends React.Component {
             selected
         } = this.state;
         let labels = [];
-        if (newValue){
+        if (newValue) {
             labels = newValue.map(v => v['value']);
         }
         selected.classes(labels)
@@ -105,7 +104,7 @@ export default class DataEditor extends React.Component {
     }
 
     classItems = (classes) => {
-        return classes.map(cls => { return {value: cls, label: cls}});
+        return classes.map(cls => { return { value: cls, label: cls } });
     }
 
     render() {
@@ -117,37 +116,31 @@ export default class DataEditor extends React.Component {
         classSuggestions = this.classItems(classSuggestions);
         selectedClasses = this.classItems(selectedClasses);
         return (
-            <>
-                <ResizableBox width={500} height={400}
-                    minConstraints={[280, 250]}
-                    maxConstraints={[1000, 1000]}>
-                    <ListGroup style={{ height: "100%" }}>
-                        <ListGroupItem>
-                            <ElementSelector 
-                                onChange={this.onSelectionChange}/>
-                        </ListGroupItem>
-                        <ListGroupItem>
-                            <CreatableSelect
-                                isMulti
-                                isDisabled={selected.length === 0}
-                                isClearable
-                                onChange={this.onClassesChange}
-                                onCreateOption={this.onCreate}
-                                options={classSuggestions}
-                                value={selectedClasses}
-                                />
-                        </ListGroupItem>
-                        <ListGroupItem style={{ height: "100%" }}>
-                            <JsonEditor
-                                ref={this.editor}
-                                onEditable={this.onEditable}
-                                onChange={this.onJsonChange}
-                                autocomplete={autocomplete}
-                            />
-                        </ListGroupItem>
-                        </ListGroup>
-                </ResizableBox>
-            </>
-                    )
-                }
-            }
+            <ListGroup style={{ height: "100%" }}>
+                <ListGroupItem>
+                    <ElementSelector
+                        onChange={this.onSelectionChange} />
+                </ListGroupItem>
+                <ListGroupItem>
+                    <CreatableSelect
+                        isMulti
+                        isDisabled={selected.length === 0}
+                        isClearable
+                        onChange={this.onClassesChange}
+                        onCreateOption={this.onCreate}
+                        options={classSuggestions}
+                        value={selectedClasses}
+                    />
+                </ListGroupItem>
+                <ListGroupItem style={{ height: "100%" }}>
+                    <JsonEditor
+                        ref={this.editor}
+                        onEditable={this.onEditable}
+                        onChange={this.onJsonChange}
+                        autocomplete={autocomplete}
+                    />
+                </ListGroupItem>
+            </ListGroup>
+        )
+    }
+}

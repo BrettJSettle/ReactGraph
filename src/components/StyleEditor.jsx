@@ -7,7 +7,6 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import FormControl from 'react-bootstrap/FormControl';
-import { ResizableBox } from 'react-resizable';
 import parse from 'cytoscape/src/selector/parse';
 
 import JsonEditor from './JsonEditor';
@@ -16,7 +15,7 @@ import { HIDDEN_SELECTORS, DEFAULT_SELECTORS, updateSelector } from '../assets/u
 let TYPE_OPTIONS = null;
 
 const getTypeOptions = (name) => {
-    if (TYPE_OPTIONS === null){
+    if (TYPE_OPTIONS === null) {
         TYPE_OPTIONS = {};
         window.cy.style().properties.forEach(p => {
             TYPE_OPTIONS[p.name] = p.type
@@ -41,16 +40,16 @@ const DEFAULT_COLORS = [
     '#0A0A4b'
 ]
 const getSuggestions = (type) => {
-    if (!type){
+    if (!type) {
         return []
     }
-    if (type.enums){
+    if (type.enums) {
         return type.enums;
     }
-    if (type.number){
+    if (type.number) {
         return [0]
     }
-    if (type.color){
+    if (type.color) {
         return DEFAULT_COLORS;
     }
     return []
@@ -61,12 +60,12 @@ const autocompleteStyle = {
     trigger: 'focus',
     caseSensitive: false,
     getOptions: (text, path, input, editor) => {
-        if (input === 'value'){
+        if (input === 'value') {
             const field = path[0];
             let options = new Set();
             // Add from default properties.
             let defaultValue = window.cy.style().getDefaultProperty(field);
-            if (defaultValue !== undefined){
+            if (defaultValue !== undefined) {
                 options.add(defaultValue.strValue);
                 options.add(defaultValue.value);
             }
@@ -78,7 +77,7 @@ const autocompleteStyle = {
                 options.add(ele.style(field));
             });
             return Array.from(options);
-        }else if (input === 'field'){
+        } else if (input === 'field') {
             return window.cy.style().propertyNames;
         }
         return [];
@@ -87,7 +86,7 @@ const autocompleteStyle = {
 
 const addStyle = (selector, style) => {
     let warning = '';
-    if (!parse.parse(selector)){
+    if (!parse.parse(selector)) {
         warning = `'${selector}' is not a valid selector.`;
     }
     if (!warning) {
@@ -159,11 +158,15 @@ export default class StyleEditor extends React.Component {
         super(props);
         this.editor = createRef();
         this.state = {
-            selector: null,
+            selector: "node",
             newSelectorModal: null
         };
         window.editor = this.editor;
         this.errors = []
+    }
+
+    componentDidMount = () => {
+        this.setSelector(this.state.selector);
     }
 
     setSelector = (selector) => {
@@ -185,7 +188,7 @@ export default class StyleEditor extends React.Component {
             newSelectorModal['show'] = true;
         } else if (action === 'copy') {
             newSelectorModal['show'] = true;
-            newSelectorModal['defaultValue'] = this.state.selector;
+            newSelectorModal['defaultValue'] = selector;
         } else if (action === 'delete') {
             const styles = window.cy.style().json().filter(s => s.selector !== selector);
             window.cy.style().fromJson(styles).update();
@@ -202,17 +205,7 @@ export default class StyleEditor extends React.Component {
         const {
             selector
         } = this.state;
-        // const styles = window.cy.style().json();
-        // let curStyle = styles.filter(s => s.selector === selector);
-        // curStyle = curStyle[0].style;
-        
-        // Object.keys(newStyle).forEach(k => {
-        //     const val = newStyle[k];
-        //     if (curStyle[k] !== val){
-
-        //     }
-        // })
-        if (this.errors.length === 0){
+        if (this.errors.length === 0) {
             updateSelector(selector, newStyle).update();
         }
     }
@@ -222,8 +215,8 @@ export default class StyleEditor extends React.Component {
 
         Object.keys(json).forEach(k => {
             const v = window.cy.style().parse(k, json[k]);
-            if (!v){
-                errors.push({path: [k], 'message': 'Invalid property.'});
+            if (!v) {
+                errors.push({ path: [k], 'message': 'Invalid property.' });
             }
         });
         this.errors = errors;
@@ -231,8 +224,10 @@ export default class StyleEditor extends React.Component {
     }
 
     handleModalClose = (evt, name) => {
+        const style = getStyle(name);
+        this.editor.current.jsonEditor.set(style);
         this.setState({
-            selector: name || this.state.selector,
+            selector: name,
             newSelectorModal: null
         })
     }
@@ -247,53 +242,47 @@ export default class StyleEditor extends React.Component {
             .filter(s => !HIDDEN_SELECTORS.includes(s.selector));
 
         return (
-            <>
+            <ListGroup style={{ height: "100%" }}>
                 <NewSelectorModal
                     handleClose={this.handleModalClose}
                     {...newSelectorModal}
                 />
-                <ResizableBox width={500} height={400}
-                    minConstraints={[280, 250]}
-                    maxConstraints={[1000, 1000]}>
-                    <ListGroup style={{ height: "100%" }}>
-                        <ListGroupItem>
-                            <InputGroup>
-                                <Form.Control
-                                    as="select"
-                                    placeholder="Style"
-                                    defaultValue="0"
-                                    onChange={this.styleChanged}>
-                                    <option disabled value="0"> - Style selectors - </option>
-                                    {selectors.map((s, i) => {
-                                        return (
-                                            <option
-                                                key={i}
-                                                value={s.selector}>
-                                                {s.selector}
-                                            </option>);
-                                    })}
-                                </Form.Control>
-                                <Dropdown as={InputGroup.Append} onSelect={this.handleDropdownAction}>
-                                    <Button onClick={e => this.handleDropdownAction('add')}>Add</Button>
-                                    <Dropdown.Toggle split />
-                                    <Dropdown.Menu>
-                                        <Dropdown.Item disabled={selector === null} eventKey="copy">Copy</Dropdown.Item>
-                                        <Dropdown.Item disabled={selector === null || DEFAULT_SELECTORS.includes(selector)} eventKey="delete">Delete</Dropdown.Item>
-                                    </Dropdown.Menu>
-                                </Dropdown>
-                            </InputGroup>
-                        </ListGroupItem>
-                        <ListGroupItem style={{ height: "100%" }}>
-                            <JsonEditor
-                                ref={this.editor}
-                                onValidate={this.onValidate}
-                                onChange={this.onChange}
-                                autocomplete={autocompleteStyle}
-                            />
-                        </ListGroupItem>
-                    </ListGroup>
-                </ResizableBox>
-            </>
+                <ListGroupItem>
+                    <InputGroup>
+                        <Form.Control
+                            id="style-dropdown"
+                            as="select"
+                            placeholder="Style"
+                            value={selector}
+                            onChange={this.styleChanged}>
+                            {selectors.map((s, i) => {
+                                return (
+                                    <option
+                                        key={i}
+                                        value={s.selector}>
+                                        {s.selector}
+                                    </option>);
+                            })}
+                        </Form.Control>
+                        <Dropdown as={InputGroup.Append} onSelect={this.handleDropdownAction}>
+                            <Button onClick={e => this.handleDropdownAction('add')}>Add</Button>
+                            <Dropdown.Toggle split />
+                            <Dropdown.Menu>
+                                <Dropdown.Item eventKey="copy">Copy</Dropdown.Item>
+                                <Dropdown.Item disabled={DEFAULT_SELECTORS.includes(selector)} eventKey="delete">Delete</Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </InputGroup>
+                </ListGroupItem>
+                <ListGroupItem style={{ height: "100%" }}>
+                    <JsonEditor
+                        ref={this.editor}
+                        onValidate={this.onValidate}
+                        onChange={this.onChange}
+                        autocomplete={autocompleteStyle}
+                    />
+                </ListGroupItem>
+            </ListGroup>
         )
     }
 }
