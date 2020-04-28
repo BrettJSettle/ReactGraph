@@ -53,8 +53,8 @@ export default class Editor extends React.Component {
             <Card id="editor">
                 <Card.Header style={{ paddingTop: '.1rem' }}>
                     <Nav variant="tabs" activeKey={tab} onSelect={this.tabChange}>
-                        {Object.keys(this.tabs).map((n, i) => (
-                            <Nav.Item key={i}>
+                        {Object.keys(this.tabs).map(n => (
+                            <Nav.Item key={n}>
                                 <Nav.Link eventKey={n}>{n}</Nav.Link>
                             </Nav.Item>
                         ))}

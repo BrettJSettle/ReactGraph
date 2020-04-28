@@ -124,16 +124,6 @@ class FileExporter extends React.Component {
                         <option value="style">Style</option>
                     </Form.Control>
                 </Form.Group>
-                {/* {type === 'style' &&
-                    <Form.Group>
-                        <Form.Label>Style(s)</Form.Label>
-                        <Form.Control as="select" multiple name="style" defaultValue="all">
-                            <option value="all">All styles</option>
-                            {window.cy.style().json().map((s, i) => (
-                                <option key={i} value={s.selector}>{s.selector}</option>
-                            ))}
-                        </Form.Control></Form.Group>} */}
-
                 <Button className='float-right' type="submit">
                     Export
                 </Button>

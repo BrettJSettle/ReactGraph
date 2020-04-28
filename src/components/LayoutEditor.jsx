@@ -150,10 +150,10 @@ export default class LayoutEditor extends React.Component {
                             placeholder="Layout"
                             value={layout}
                             onChange={this.layoutChanged}>
-                            {Object.keys(LAYOUTS).map((s, i) => {
+                            {Object.keys(LAYOUTS).map(s => {
                                 return (
                                     <option
-                                        key={i}
+                                        key={s}
                                         value={s}>
                                         {s}
                                     </option>);

@@ -255,10 +255,10 @@ export default class StyleEditor extends React.Component {
                             placeholder="Style"
                             value={selector}
                             onChange={this.styleChanged}>
-                            {selectors.map((s, i) => {
+                            {selectors.map(s => {
                                 return (
                                     <option
-                                        key={i}
+                                        key={s.selector}
                                         value={s.selector}>
                                         {s.selector}
                                     </option>);
