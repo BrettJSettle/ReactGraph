@@ -5,7 +5,7 @@ import CreatableSelect from 'react-select/creatable';
 
 import JsonEditor from './JsonEditor';
 import ElementSelector from './ElementSelector';
-import { getElements, getClassSuggestions, getClassesIntersection } from '../assets/util';
+import { G, getClassSuggestions, getClassesIntersection } from '../assets/util';
 
 const LOCKED_DATA = ['id', 'source', 'target'];
 
@@ -20,7 +20,6 @@ const autocomplete = {
             // Add values from other elements.
             window.cy.elements().forEach(ele => {
                 let s = ele.data(field);
-                console.log(s)
                 if (s && typeof (s) !== 'object') {
                     options.add(s);
                 }
@@ -54,7 +53,7 @@ export default class DataEditor extends React.Component {
     }
 
     componentDidMount = () => {
-        const selected = getElements(':selected');
+        let selected = G(':selected');
         const data = selected.map(item => item.data());
         this.editor.current.jsonEditor.set(data);
         this.setState({ selected });
@@ -78,6 +77,7 @@ export default class DataEditor extends React.Component {
     onSelectionChange = (selected) => {
         const data = selected.map(item => item.data());
         this.editor.current.jsonEditor.set(data);
+        this.editor.current.jsonEditor.expandAll();
         this.setState({ selected });
     }
 
@@ -112,7 +112,7 @@ export default class DataEditor extends React.Component {
             selected
         } = this.state;
         let classSuggestions = getClassSuggestions();
-        let selectedClasses = getClassesIntersection(getElements(':selected'));
+        let selectedClasses = getClassesIntersection(G(':selected'));
         classSuggestions = this.classItems(classSuggestions);
         selectedClasses = this.classItems(selectedClasses);
         return (

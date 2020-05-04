@@ -5,11 +5,13 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Modal from 'react-bootstrap/Modal';
 import FormControl from 'react-bootstrap/FormControl';
 
 import JsonEditor from './JsonEditor';
 import { LAYOUTS, DEFAULT_LAYOUTS } from '../assets/defaults';
+import { G } from '../assets/util';
 
 
 const NewLayoutModal = ({ defaultValue, handleClose, show }) => {
@@ -71,6 +73,7 @@ export default class LayoutEditor extends React.Component {
     setLayout = (layout) => {
         const params = LAYOUTS[layout];
         this.editor.current.jsonEditor.set(params);
+        this.editor.current.jsonEditor.expandAll();
         this.setState({ layout });
     }
 
@@ -111,12 +114,13 @@ export default class LayoutEditor extends React.Component {
         })
     }
 
-    apply = () => {
+    doLayout = (selected = false) => {
         const {
             layout
         } = this.state;
         const params = LAYOUTS[layout];
-        let runner = window.cy.layout(params);
+        let elements = G(selected ? ':selected' : '');
+        let runner = elements.layout(params);
         runner.run();
     }
 
@@ -177,7 +181,10 @@ export default class LayoutEditor extends React.Component {
                     />
                 </ListGroupItem>
                 <ListGroupItem className="d-flex justify-content-end">
-                    <Button onClick={this.apply}>Apply</Button>
+                    <ButtonGroup>
+                        <Button onClick={() => this.doLayout(true)}>Layout Selected</Button>
+                        <Button onClick={() => this.doLayout(false)}>Layout All</Button>
+                    </ButtonGroup>
                 </ListGroupItem>
             </ListGroup>
         )

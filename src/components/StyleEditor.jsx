@@ -172,6 +172,7 @@ export default class StyleEditor extends React.Component {
     setSelector = (selector) => {
         const style = getStyle(selector);
         this.editor.current.jsonEditor.set(style);
+        this.editor.current.jsonEditor.expandAll();
         this.setState({ selector });
     }
 
@@ -205,16 +206,14 @@ export default class StyleEditor extends React.Component {
         const {
             selector
         } = this.state;
-        if (this.errors.length === 0) {
-            updateSelector(selector, newStyle).update();
-        }
+        updateSelector(selector, newStyle).update();
     }
 
     onValidate = (json) => {
         var errors = [];
 
         Object.keys(json).forEach(k => {
-            const v = window.cy.style().parse(k, json[k]);
+            const v = window.cy.style().parseImpl(k, json[k]);
             if (!v) {
                 errors.push({ path: [k], 'message': 'Invalid property.' });
             }

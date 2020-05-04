@@ -6,7 +6,7 @@ import FormControl from 'react-bootstrap/FormControl';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Popover from 'react-bootstrap/Popover';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import {getElements} from '../assets/util';
+import {G} from '../assets/util';
 
 import "@kenshooui/react-multi-select/dist/style.css"
 
@@ -45,11 +45,9 @@ export default class ElementSelector extends React.Component {
         window.cy.removeListener('select unselect', this.selectionChanged);
     }
 
-
-
     selectionChanged = (event, selected) => {
         if (selected === undefined){
-            selected = getElements(':selected');
+            selected = G(':selected');
         }
         this.setState({selected})
         this.props.onChange(selected);
@@ -67,9 +65,9 @@ export default class ElementSelector extends React.Component {
     }
 
     render() {
-        const elements = getElements();
+        const elements = G();
         const items = elementsToItems(elements);
-        const selectedItems = items.filter(el => el.element.selected())
+        const selectedItems = items.filter(el => el.element.selected());
         const popover = (
             <Popover>
                 <Popover.Content>

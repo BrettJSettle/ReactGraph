@@ -1,13 +1,16 @@
 
 /* Node UID generator */
 export const uuid = () => {
-    return ([1e4] + -1e3).replace(/[018]/g, c => {
+    const id = ([1e4] + -1e3).replace(/[018]/g, c => {
         let exp = crypto.getRandomValues(new Uint8Array(1))[0] & 15;
         exp = exp >> (c / 4);
         const val = c ^ exp;
         return val.toString(16)
+    });
+    if (window.cy.$('#' + id).length > 0){
+        return uuid();
     }
-    );
+    return id;
 }
 
 const getSelectorIndex = (selector) => {
@@ -27,7 +30,7 @@ const getSelectorIndex = (selector) => {
 export const updateSelector = (selector, style) => {
     let valid = true;
     Object.keys(style).forEach(k => {
-        const p = window.cy.style().parse(k, style[k]);
+        const p = window.cy.style().parseImpl(k, style[k]);
         if (!p){
             valid = false;
         }
@@ -87,15 +90,11 @@ export const DEFAULT_SELECTORS = [
 
 const CLASS_REG = /\.-?[_a-zA-Z]+[_a-zA-Z0-9-]*\s*/g;
 
-
-export const getElements = (selector) => {
-    let elements = window.cy.elements(selector || '');
-    elements = elements.filter(ele => {
+export const G = (selector) => {
+    return window.cy.$(selector).filter(ele => {
         return arrayIntersection(ele.classes(), EH_CLASSES).length === 0;
-    });
-    return window.cy.collection(elements);
+    })
 }
-
 
 // Download a JSON object to a file.
 export const downloadFile = (data, name) => {
@@ -130,7 +129,7 @@ export const getClassesIntersection = (elements) => {
 }
 const EH_NODES = ['.eh-source', '.eh-target', '.eh-hover']
 export const getClassSuggestions = () => {
-    let allClasses = getClassesUnion(getElements());
+    let allClasses = getClassesUnion(G());
     window.cy.style().json().forEach(s => {
         const sel = s.selector;
         if (EH_NODES.includes(sel)){
@@ -143,4 +142,12 @@ export const getClassSuggestions = () => {
         }
     })
     return allClasses;
+}
+
+export const fit = (elements) => {
+    if (!elements){
+        window.cy.fit();
+    }else{
+        window.cy.fit(elements);
+    }
 }
